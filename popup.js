@@ -1,34 +1,40 @@
+var checkUrl = 'https://support.ingress.com/hc/(en-us|zh-tw)/requests';
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
-var dataUrl = 'http://140.113.215.24:7777/reports/v1/list';
-
+var host = 'http://140.113.215.24:7777';
+var dataUrl = host + '/reports/v1/api/list';
 function renderStatus(statusText) {
   $('#status').text(statusText);
 }
 
-function checkUrl(tab) {
-    if (tab.url == reportUrl) {
-      checkName(tab);
-    }
-    else {
+function wrongPage() {
       renderStatus('wrong page.');
       $('#msg').text('You are not at report page.');
       $("#link").show();
       $('#link').on('click', function() {
         chrome.tabs.create({ url: reportUrl});
       });
-    }
-
 }
 
-function checkName(tab) {
-  renderStatus('Checking login....');
+function check(tab) {
+  renderStatus('Checking....');
+  c = tab.url.match(checkUrl);
+  if (!c || !(c.index == 0)) {
+    wrongPage();
+    return;
+  }
+
   function callback(response) {
-    if (response) {
-      getData(tab);
+    if (response && response.result) {
+      if (response.name) {
+        getData(tab);
+      }
+      else {
+        $('#msg').text('You need login first.');
+        renderStatus('Need login.');
+      }
     }
     else {
-      $('#msg').text('You need login first.');
-      renderStatus('Need login.');
+      wrongPage();
     }
   }
   chrome.tabs.sendMessage(tab.id, {op: 'check_login'}, callback);
@@ -84,7 +90,7 @@ function createTable(data) {
   table.append(name_td);
   table.append(status_td);
 
-  var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': data.file_link, 'text': 'file'});
+  var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': host + data.file_link, 'text': 'file'});
   file_td.append(file_a);
   table.append(file_td);
 
@@ -95,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderStatus('Checking page....');
   var query = { active: true, currentWindow: true };
   function callback(tabs) {
-    checkUrl(tabs[0]);
+    check(tabs[0]);
   }
   chrome.tabs.query(query, callback);
 });

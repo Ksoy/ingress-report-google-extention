@@ -5,14 +5,28 @@
     "description" : "This extension shows a Google ...",
     "version": "0.0.1",
 
+    "background": {
+        "scripts": [
+            "jquery.min.js",
+            "background.js"
+        ]
+    },
     "content_scripts": [{
-        "matches": [ "https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398" ],
+        "matches": [
+            "https://support.ingress.com/hc/en-us/requests*",
+            "https://support.ingress.com/hc/zh-tw/requests*"
+        ],
         "js": [
             "jquery.min.js",
             "content_script.js"
         ]
+    },{
+        "matches": [ "http://140.113.215.24:7777/reports/v1/login*" ],
+        "js": [
+            "jquery.min.js",
+            "test.js"
+        ]
     }],
-
     "browser_action": {
         "default_icon": "noairplane.png",
         "default_popup": "popup.html"
