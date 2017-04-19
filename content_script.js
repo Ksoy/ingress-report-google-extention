@@ -7,10 +7,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         var data = msg.data;
         $('#request_subject').val(data.subject);
         $('#request_description').val(data.description);
-        $('#request_custom_fields_27867927').val(data.flyname);
-
-        $('#request_custom_fields_26993577').val('abuse_cheat');
-        $('a.nesty-input').text('GPS spoofing');
+        $('#request_custom_fields_27867927').val(data.bad_agent);
+        $('#request_custom_fields_26993577').val(data.inappropriate_type);
+        //$('a.nesty-input').text('GPS spoofing');
         $('#request_custom_fields_26753947').val($('#user-name').text());
     }
 });

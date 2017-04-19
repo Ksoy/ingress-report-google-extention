@@ -1,5 +1,5 @@
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
-var dataUrl = 'http://140.113.215.24:7777';
+var dataUrl = 'http://140.113.215.24:7777/reports/v1/list';
 
 function renderStatus(statusText) {
   $('#status').text(statusText);
@@ -39,9 +39,11 @@ function getData(tab) {
 
   $.get(dataUrl, function(result) {
     renderStatus('Done.');
+    result = JSON.parse(result);
+
     $('#msg').text('Select Data to report.');
 
-    result.forEach(function(data) {
+    result.reports.forEach(function(data) {
       $('#table').append(createTable(data));
     });
 
@@ -50,7 +52,8 @@ function getData(tab) {
       var sendData = {
         'subject': data.subject,
         'description': data.description,
-        'flyname': $(this).text()
+        'bad_agent': $(this).text(),
+        'inappropriate_type': data.inappropriate_type
       };
       chrome.tabs.sendMessage(tab.id, {'op': 'set_data', 'data': sendData});
     });
@@ -67,14 +70,14 @@ function createTable(data) {
   var status_td = $('<td/>');
   var file_td = $('<td/>');
 
-  data.flynames.forEach(function(name) {
+  data.bad_agents.forEach(function(bas_agent) {
     var name_tr = $('<tr/>');
-    var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': name, 'val': JSON.stringify(data)});
+    var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': bas_agent.name, 'val': JSON.stringify(data)});
     name_tr.append(name_a);
     name_td.append(name_tr);
 
     var status_tr = $('<tr/>');
-    var status_label = $('<label/>', {'text': 'new'});
+    var status_label = $('<label/>', {'text': bas_agent.status});
     status_tr.append(status_label);
     status_td.append(status_tr);
   });
