@@ -1,0 +1,26 @@
+{
+    "manifest_version": 2,
+
+    "name": "Getting started example",
+    "description" : "This extension shows a Google ...",
+    "version": "0.0.1",
+
+    "content_scripts": [{
+        "matches": [ "https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398" ],
+        "js": [
+            "jquery.min.js",
+            "content_script.js"
+        ]
+    }],
+
+    "browser_action": {
+        "default_icon": "noairplane.png",
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "webRequest",
+        "activeTab",
+        "https://ajax.googleapis.com/",
+        "tabs"
+    ]
+}
