@@ -1,7 +1,7 @@
 var checkUrl = 'https://support.ingress.com/hc/(en-us|zh-tw)/requests';
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
-var host = 'http://140.113.215.24:7777';
-var dataUrl = host + '/reports/v1/api/list';
+var host = 'http://140.113.215.24';
+var dataUrl = host + '/reports/v1/api/list/';
 function renderStatus(statusText) {
   $('#status').text(statusText);
 }
@@ -26,7 +26,7 @@ function check(tab) {
   function callback(response) {
     if (response && response.result) {
       if (response.name) {
-        getData(tab);
+        getData(tab, response.name);
       }
       else {
         $('#msg').text('You need login first.');
@@ -40,10 +40,10 @@ function check(tab) {
   chrome.tabs.sendMessage(tab.id, {op: 'check_login'}, callback);
 }
 
-function getData(tab) {
+function getData(tab, name) {
   renderStatus('Get data...');
 
-  $.get(dataUrl, function(result) {
+  $.get(dataUrl + name, function(result) {
     renderStatus('Done.');
     result = JSON.parse(result);
 
@@ -78,8 +78,14 @@ function createTable(data) {
 
   data.bad_agents.forEach(function(bas_agent) {
     var name_tr = $('<tr/>');
-    var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': bas_agent.name, 'val': JSON.stringify(data)});
-    name_tr.append(name_a);
+    if ('new' == bas_agent.status) {
+      var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': bas_agent.name, 'val': JSON.stringify(data)});
+      name_tr.append(name_a);
+    }
+    else {
+      var name_a = $('<label/>', {'text': bas_agent.name});
+      name_tr.append(name_a);
+    }
     name_td.append(name_tr);
 
     var status_tr = $('<tr/>');

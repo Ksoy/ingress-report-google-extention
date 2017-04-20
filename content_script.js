@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     }
 });
 
-$('#new_request').on('submit', function(evt) {
+document.addEventListener('submit', function(evt) {
     chrome.extension.sendMessage({
         user: $('#user-name').text(),
         report: $('#request_custom_fields_27867927').val()
