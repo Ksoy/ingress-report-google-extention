@@ -1,7 +1,8 @@
 var checkUrl = 'https://support.ingress.com/hc/(en-us|zh-tw)/requests';
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
-var host = 'http://140.113.215.24';
+var host = 'http://fuckagent.nctu.me';
 var dataUrl = host + '/reports/v1/api/list/';
+
 function renderStatus(statusText) {
   $('#status').text(statusText);
 }
@@ -47,11 +48,15 @@ function getData(tab, name) {
     renderStatus('Done.');
     result = JSON.parse(result);
 
-    $('#msg').text('Select Data to report.');
 
-    result.reports.forEach(function(data) {
-      $('#table').append(createTable(data));
-    });
+    if (!result.reports.length) {
+      $('#msg').text('Congratulation, No data to report.');
+    } else {
+      $('#msg').text('Click username and download file to report.');
+      result.reports.forEach(function(data) {
+        $('#table').append(createTable(data));
+      });
+    }
 
     $('.send_data').on('click', function() {
       var data = JSON.parse($(this).val());
