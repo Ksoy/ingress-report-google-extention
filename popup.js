@@ -54,7 +54,9 @@ function getData(tab, name) {
     } else {
       $('#msg').text('Click username and download file to report.');
       result.reports.forEach(function(data) {
-        $('#table').append(createTable(data));
+        if ('new' == data.status) {
+          $('#table').append(createTable(data));
+        }
       });
     }
 
