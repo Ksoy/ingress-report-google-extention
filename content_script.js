@@ -16,16 +16,18 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         var data = msg.data;
         $('#request_subject').val(data.subject);
         $('#request_description').val(data.description);
-        $('#request_custom_fields_27867927').val(data.bad_agent);
+        $('#request_custom_fields_27867927').val(data.cheater);
         $('#request_custom_fields_26993577').val(data.inappropriate_type);
         $('a.nesty-input').text(TYPE_MAP[data.inappropriate_type]);
         $('#request_custom_fields_26753947').val($('#user-name').text());
+        $('#new_request').append($('<div>', {'id': 'report_id', 'type': 'hidden', 'r_id': data.report_id}))
     }
 });
 
 document.addEventListener('submit', function(evt) {
     chrome.extension.sendMessage({
         user: $('#user-name').text(),
-        report: $('#request_custom_fields_27867927').val()
+        cheater: $('#request_custom_fields_27867927').val(),
+        report_id: $('#report_id').attr('r_id')
     });
 });

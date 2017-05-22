@@ -2,6 +2,7 @@ var checkUrl = 'https://support.ingress.com/hc/(en-us|zh-tw)/requests';
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
 var host = 'http://fuckagent.nctu.me';
 var dataUrl = host + '/reports/v1/api/list/';
+var fileUrl = host + ':7890/';
 
 function renderStatus(statusText) {
   $('#status').text(statusText);
@@ -63,9 +64,10 @@ function getData(tab, name) {
     $('.send_data').on('click', function() {
       var data = JSON.parse($(this).val());
       var sendData = {
+        'report_id': data.report_id,
         'subject': data.subject,
         'description': data.description,
-        'bad_agent': $(this).text(),
+        'cheater': $(this).text(),
         'inappropriate_type': data.inappropriate_type
       };
       chrome.tabs.sendMessage(tab.id, {'op': 'set_data', 'data': sendData});
@@ -83,27 +85,27 @@ function createTable(data) {
   var status_td = $('<td/>');
   var file_td = $('<td/>');
 
-  data.bad_agents.forEach(function(bas_agent) {
+  data.cheaters.forEach(function(cheater) {
     var name_tr = $('<tr/>');
-    if ('new' == bas_agent.status) {
-      var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': bas_agent.name, 'val': JSON.stringify(data)});
+    if ('new' == cheater.status) {
+      var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': cheater.name, 'val': JSON.stringify(data)});
       name_tr.append(name_a);
     }
     else {
-      var name_a = $('<label/>', {'text': bas_agent.name});
+      var name_a = $('<label/>', {'text': cheater.name});
       name_tr.append(name_a);
     }
     name_td.append(name_tr);
 
     var status_tr = $('<tr/>');
-    var status_label = $('<label/>', {'text': bas_agent.status});
+    var status_label = $('<label/>', {'text': cheater.status});
     status_tr.append(status_label);
     status_td.append(status_tr);
   });
   table.append(name_td);
   table.append(status_td);
 
-  var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': host + data.file_link, 'text': 'file'});
+  var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': fileUrl + data.filename, 'text': 'file'});
   file_td.append(file_a);
   table.append(file_td);
 

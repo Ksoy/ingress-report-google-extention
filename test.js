@@ -1,4 +1,4 @@
-$('#login').on('submit', function(evt) {
+/*$('#login').on('submit', function(evt) {
     //evt.preventDefault();
     alert($('#username').val() + $('#password').val());
     if($('#username').val() && $('#password').val()) {}
@@ -20,3 +20,4 @@ window.XMLHttpRequest.prototype.open = function(method, path, async) {
 document.addEventListener('submit', function(e){
    alert('aa');
 }, false);
+*/
