@@ -105,8 +105,13 @@ function createTable(data) {
   table.append(name_td);
   table.append(status_td);
 
-  var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': fileUrl + data.filename, 'text': 'file'});
-  file_td.append(file_a);
+  if (data.filename) {
+    var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': fileUrl + data.filename, 'text': 'file'});
+    file_td.append(file_a);
+  } else {
+    var file_label = $('<label/>', {'text': 'no file'});
+    file_td.append(file_label);
+  }
   table.append(file_td);
 
   return table;
