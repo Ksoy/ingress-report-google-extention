@@ -8,13 +8,25 @@ function renderStatus(statusText) {
   $('#status').text(statusText);
 }
 
+function setTabLocation() {
+  function callback(tabs) {
+    tabs.forEach(function(tab){
+      if (tab.active) {
+        chrome.tabs.update(tab.id, {url: reportUrl});
+        return;
+      }
+    });
+  }
+  chrome.tabs.query(Object(), callback);
+}
+
 function wrongPage() {
-      renderStatus('wrong page.');
-      $('#msg').text('You are not at report page.');
-      $("#link").show();
-      $('#link').on('click', function() {
-        chrome.tabs.create({ url: reportUrl});
-      });
+  renderStatus('wrong page.');
+  $('#msg').text('You are not at report page.');
+  $("#link").show();
+  $('#link').on('click', function() {
+    setTabLocation();
+  });
 }
 
 function check(tab) {
