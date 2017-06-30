@@ -3,7 +3,7 @@
 
     "name": "Ingress inappropriate agent report",
     "description" : "Bad agent should be die.",
-    "version": "0.0.5",
+    "version": "0.11",
 
     "background": {
         "scripts": [
@@ -25,6 +25,12 @@
         "js": [
             "jquery.min.js",
             "test.js"
+        ]
+    },{
+        "matches": ["https://support.ingress.com/hc/en-us/articles/115009205887"],
+        "js": [
+            "jquery.min.js",
+            "pre_page.js"
         ]
     }],
     "browser_action": {

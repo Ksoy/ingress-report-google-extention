@@ -1,23 +1,29 @@
 var checkUrl = 'https://support.ingress.com/hc/(en-us|zh-tw)/requests';
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
 var host = 'http://fuckagent.nctu.me';
-var dataUrl = host + '/reports/v1/api/list/';
+var dataUrl = host + '/reports/v1/api/report_list/';
+var versionUrl = host + '/reports/v1/api/extension_version'
+var extensionUpdateUrl = 'https://chrome.google.com/webstore/detail/ingress-inappropriate-age/iaobkfnjelkejedldphlkhimpokkdgmh?hl=zh-TW&gl=TW&authuser=0'
 var fileUrl = host + ':7890/';
+
+function getExtensionVersion() { 
+  var version = 'NaN'; 
+  var xhr = new XMLHttpRequest(); 
+  xhr.open('GET', chrome.extension.getURL('manifest.json'), false); 
+  xhr.send(null); 
+  var manifest = JSON.parse(xhr.responseText); 
+  return manifest.version; 
+}
 
 function renderStatus(statusText) {
   $('#status').text(statusText);
 }
 
-function setTabLocation() {
+function setTabLocation(url) {
   function callback(tabs) {
-    tabs.forEach(function(tab){
-      if (tab.active) {
-        chrome.tabs.update(tab.id, {url: reportUrl});
-        return;
-      }
-    });
+    chrome.tabs.update(tabs[0].id, {url: url});
   }
-  chrome.tabs.query(Object(), callback);
+  chrome.tabs.query({ active: true, currentWindow: true }, callback);
 }
 
 function wrongPage() {
@@ -25,22 +31,37 @@ function wrongPage() {
   $('#msg').text('You are not at report page.');
   $("#link").show();
   $('#link').on('click', function() {
-    setTabLocation();
+    setTabLocation(reportUrl);
+    //chrome.tabs.create({ url: reportUrl});
   });
 }
 
-function check(tab) {
-  renderStatus('Checking....');
-  c = tab.url.match(checkUrl);
-  if (!c || !(c.index == 0)) {
+function check_version() {
+  renderStatus('Checking version....');
+  $.get(versionUrl, function(result) {
+    if (result > getExtensionVersion()) {
+      $('#msg').html('New extension release, go to <a href="">update</a>.');
+      $('a').on('click', function() {
+        setTabLocation(extensionUpdateUrl);
+      })
+    } else {
+      chrome.tabs.query({ active: true, currentWindow: true }, check_url);
+    }
+  });
+}
+
+function check_url(tabs) {
+  renderStatus('Checking page....');
+  result = tabs[0].url.match(checkUrl);
+  if (!result || !(result.index == 0)) {
     wrongPage();
     return;
   }
 
-  function callback(response) {
+  function check_login(response) {
     if (response && response.result) {
       if (response.name) {
-        getData(tab, response.name);
+        getData(tabs[0], response.name);
       }
       else {
         $('#msg').text('You need login first.');
@@ -51,7 +72,7 @@ function check(tab) {
       wrongPage();
     }
   }
-  chrome.tabs.sendMessage(tab.id, {op: 'check_login'}, callback);
+  chrome.tabs.sendMessage(tabs[0].id, {op: 'check_login'}, check_login);
 }
 
 function getData(tab, name) {
@@ -99,14 +120,8 @@ function createTable(data) {
 
   data.cheaters.forEach(function(cheater) {
     var name_tr = $('<tr/>');
-    if ('new' == cheater.status) {
-      var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': cheater.name, 'val': JSON.stringify(data)});
-      name_tr.append(name_a);
-    }
-    else {
-      var name_a = $('<label/>', {'text': cheater.name});
-      name_tr.append(name_a);
-    }
+    var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': cheater.name, 'val': JSON.stringify(data)});
+    name_tr.append(name_a);
     name_td.append(name_tr);
 
     var status_tr = $('<tr/>');
@@ -130,10 +145,5 @@ function createTable(data) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  renderStatus('Checking page....');
-  var query = { active: true, currentWindow: true };
-  function callback(tabs) {
-    check(tabs[0]);
-  }
-  chrome.tabs.query(query, callback);
+  check_version();
 });
