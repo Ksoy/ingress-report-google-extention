@@ -5,6 +5,11 @@ var dataUrl = host + '/reports/v1/api/report_list/';
 var versionUrl = host + '/reports/v1/api/extension_version'
 var extensionUpdateUrl = 'https://chrome.google.com/webstore/detail/ingress-inappropriate-age/iaobkfnjelkejedldphlkhimpokkdgmh?hl=zh-TW&gl=TW&authuser=0'
 var fileUrl = host + ':7890/';
+var INAPPROPRIATE_MAP = {
+    'abuse_ma': 'Multiple accounts/account sharing',
+    'abuse_sell': 'Account buying/selling',
+    'abuse_cheat': 'GPS spoofing'
+}
 
 function getExtensionVersion() { 
   var version = 'NaN'; 
@@ -64,7 +69,7 @@ function check_url(tabs) {
         getData(tabs[0], response.name);
       }
       else {
-        $('#msg').text('You need login first.');
+        $('#msg').text('You need to login first.');
         renderStatus('Need login.');
       }
     }
@@ -114,23 +119,28 @@ function getData(tab, name) {
 
 function createTable(data) {
   var table = $('<table/>');
+  var head_tr = $('<tr/>');
+  var head_td = $('<td/>', {'colspan': 3});
+  var body_tr = $('<tr/>');
   var name_td = $('<td/>');
   var status_td = $('<td/>');
   var file_td = $('<td/>');
 
-  data.cheaters.forEach(function(cheater) {
-    var name_tr = $('<tr/>');
-    var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': cheater.name, 'val': JSON.stringify(data)});
-    name_tr.append(name_a);
-    name_td.append(name_tr);
 
-    var status_tr = $('<tr/>');
+  head_td.append($('<label/>', {'text': INAPPROPRIATE_MAP[data.inappropriate_type]}));
+  head_tr.append(head_td);
+
+  data.cheaters.forEach(function(cheater) {
+    var name_a = $('<a/>', {'class': 'send_data', 'href': '#', 'text': cheater.name, 'val': JSON.stringify(data)});
+    name_td.append(name_a);
+    name_td.append($('<br>'));
+
     var status_label = $('<label/>', {'text': cheater.status});
-    status_tr.append(status_label);
-    status_td.append(status_tr);
+    status_td.append(status_label);
+    status_td.append($('<br>'));
   });
-  table.append(name_td);
-  table.append(status_td);
+  body_tr.append(name_td);
+  body_tr.append(status_td);
 
   if (data.filename) {
     var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': fileUrl + data.filename, 'text': 'file'});
@@ -139,7 +149,10 @@ function createTable(data) {
     var file_label = $('<label/>', {'text': 'no file'});
     file_td.append(file_label);
   }
-  table.append(file_td);
+  body_tr.append(file_td);
+
+  table.append(head_tr);
+  table.append(body_tr);
 
   return table;
 }
