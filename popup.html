@@ -8,26 +8,29 @@
       body {
         min-width: 300px;
       }
-      table, tr, td {
+      table {
         border: 1px solid;
         word-break: break-all;
-        cellspacing: 0px;
-      }
-      table {
-        width: 240px;
+        border-spacing: 0px;
+        width: 280px;
         margin: 3px;
+      }
+      th {
+        text-align: left;
+        background-color: lightgray;
+        border-bottom: 1px solid;
       }
       td {
         padding: 3px;
       }
       td:first-child {
-        width: 150px;
-      }
-      td:nth-child(2) {
-        width: 50px;
+        width: 80%;
       }
       td:last-child {
-        width: 40px;
+        width: 20%;
+        text-align: center;
+        vertical-align: top;
+        border-left: 1px solid;
       }
     </style>
   </head>
@@ -37,7 +40,10 @@
     <br>
     <div id="table"></div>
     <br>
-    <a href="#" id="link" style="display: none;">Goto Report</a>
+    <div id="link-div" style="display: none;">
+      <a href="#" id="link">Goto Report  </a>
+      (<a href="#" id="link-n">new tab</a>)
+    </div>
     <hr>
     <div id="status">Initialize......</div>
   </body>

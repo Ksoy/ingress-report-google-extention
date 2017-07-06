@@ -34,10 +34,12 @@ function setTabLocation(url) {
 function wrongPage() {
   renderStatus('wrong page.');
   $('#msg').text('You are not at report page.');
-  $("#link").show();
+  $("#link-div").show();
   $('#link').on('click', function() {
     setTabLocation(reportUrl);
-    //chrome.tabs.create({ url: reportUrl});
+  });
+  $('#link-n').on('click', function() {
+    chrome.tabs.create({ url: reportUrl});
   });
 }
 
@@ -86,6 +88,7 @@ function getData(tab, name) {
   $.get(dataUrl + name, function(result) {
     renderStatus('Done.');
     result = JSON.parse(result);
+    console.log(result);
 
 
     if (!result.reports.length) {
@@ -120,14 +123,15 @@ function getData(tab, name) {
 function createTable(data) {
   var table = $('<table/>');
   var head_tr = $('<tr/>');
-  var head_td = $('<td/>', {'colspan': 3});
+  var head_td = $('<th/>', {'colspan': 2});
   var body_tr = $('<tr/>');
   var name_td = $('<td/>');
-  var status_td = $('<td/>');
+  //var status_td = $('<td/>');
   var file_td = $('<td/>');
 
 
-  head_td.append($('<label/>', {'text': INAPPROPRIATE_MAP[data.inappropriate_type]}));
+  head_td.append($('<div/>').append($('<label/>', {'text': INAPPROPRIATE_MAP[data.inappropriate_type]})));
+  head_td.append($('<div/>', {'style': 'text-align:right;'}).append($('<label/>', {'text': data.creator})));
   head_tr.append(head_td);
 
   data.cheaters.forEach(function(cheater) {
@@ -135,12 +139,12 @@ function createTable(data) {
     name_td.append(name_a);
     name_td.append($('<br>'));
 
-    var status_label = $('<label/>', {'text': cheater.status});
-    status_td.append(status_label);
-    status_td.append($('<br>'));
+    //var status_label = $('<label/>', {'text': cheater.status});
+    //status_td.append(status_label);
+    //status_td.append($('<br>'));
   });
   body_tr.append(name_td);
-  body_tr.append(status_td);
+  //body_tr.append(status_td);
 
   if (data.filename) {
     var file_a = $('<a/>', {'class': 'download_file', 'href': '#', 'link': fileUrl + data.filename, 'text': 'file'});
