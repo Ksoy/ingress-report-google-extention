@@ -3,7 +3,7 @@
 
     "name": "Ingress inappropriate agent report",
     "description" : "Bad agent should be die.",
-    "version": "0.12",
+    "version": "0.13",
 
     "background": {
         "scripts": [
@@ -21,7 +21,7 @@
             "content_script.js"
         ]
     },{
-        "matches": [ "http://fuckagent.nctu.me/reports/v1/login*" ],
+        "matches": [ "https://fuckagents.nctu.me/reports/v1/login*" ],
         "js": [
             "jquery.min.js",
             "test.js"

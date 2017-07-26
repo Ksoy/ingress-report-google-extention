@@ -1,10 +1,10 @@
 var checkUrl = 'https://support.ingress.com/hc/(en-us|zh-tw)/requests';
 var reportUrl = 'https://support.ingress.com/hc/en-us/requests/new?ticket_form_id=164398';
-var host = 'http://fuckagent.nctu.me';
-var dataUrl = host + '/reports/v1/api/report_list/';
-var versionUrl = host + '/reports/v1/api/extension_version'
+var host = 'https://fuckagents.nctu.me/';
+var dataUrl = host + 'reports/v1/api/report_list/';
+var versionUrl = host + 'reports/v1/api/extension_version'
 var extensionUpdateUrl = 'https://chrome.google.com/webstore/detail/ingress-inappropriate-age/iaobkfnjelkejedldphlkhimpokkdgmh?hl=zh-TW&gl=TW&authuser=0'
-var fileUrl = host + ':7890/';
+var fileUrl = host + 'files/';
 var INAPPROPRIATE_MAP = {
     'abuse_ma': 'Multiple accounts/account sharing',
     'abuse_sell': 'Account buying/selling',
@@ -54,6 +54,10 @@ function check_version() {
     } else {
       chrome.tabs.query({ active: true, currentWindow: true }, check_url);
     }
+  })
+  .fail(function (result) {
+    console.log(result);
+    renderStatus('Connection fail. Please contact Admin.');
   });
 }
 
